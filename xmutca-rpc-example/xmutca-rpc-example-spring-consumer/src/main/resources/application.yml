@@ -1,8 +1,8 @@
 rpc:
-  registry: nacos://localhost:8848
   consumer:
     - timeout: 1000
       codecType: protoStuff
+      remoteAddress: localhost:8886
       metadata:
         group: "order"
         serviceName: "test"

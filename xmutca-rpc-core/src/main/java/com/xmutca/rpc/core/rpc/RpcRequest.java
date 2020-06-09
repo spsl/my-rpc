@@ -1,6 +1,7 @@
 package com.xmutca.rpc.core.rpc;
 
 import com.alibaba.fastjson.JSON;
+import com.xmutca.rpc.core.common.InvokerUtils;
 import com.xmutca.rpc.core.common.TransportType;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +31,9 @@ public class RpcRequest implements Serializable {
     private String methodName;
 
     /**
-     * 参数类型列表
+     * 方法签名
      */
-    private Class<?>[] parameterTypes;
+    private String methodSign;
 
     /**
      * 参数列表
@@ -145,7 +146,7 @@ public class RpcRequest implements Serializable {
             RpcRequest rpcRequest = new RpcRequest();
             rpcRequest.setClassName(className);
             rpcRequest.setMethodName(methodName);
-            rpcRequest.setParameterTypes(parameterTypes);
+            rpcRequest.setMethodSign(InvokerUtils.calculateMethodSign(className, methodName, parameterTypes));
             rpcRequest.setArguments(arguments);
             rpcRequest.setAttachments(attachments);
             rpcRequest.setTransportType(transportType);

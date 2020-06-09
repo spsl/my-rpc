@@ -3,11 +3,14 @@ package com.xmutca.rpc.core.consumer;
 import com.xmutca.rpc.core.common.ExtensionLoader;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.config.RpcMetadata;
+import com.xmutca.rpc.core.rpc.invoke.ServiceInvoker;
+import javassist.*;
 import org.assertj.core.util.Preconditions;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @version Revision: 0.0.1
@@ -66,6 +69,54 @@ public class GenericProxyFactory {
                 new Class[]{target},
                 (Object proxy, Method method, Object[] args) -> invoker.invoke(method.getName(), method.getParameterTypes(), args));
     }
+
+
+    /**
+     * 生成代理类
+     * @param <T>
+     * @return
+     */
+    public <T> T generateReferenceBean() {
+
+
+
+        return null;
+    }
+
+    private static <T> T generateInterfaceImplements(Class<T> clazz) throws NotFoundException {
+        // 创建类
+        final String proxyClassName = "rpc.turbo.invoke.generate.Proxy_"
+                + clazz.getName()
+                + "_"
+                + UUID.randomUUID().toString().replace("-", "");
+
+
+
+        T proxyObject = null;
+        try {
+            ClassPool pool = ClassPool.getDefault();
+            CtClass ctClass = pool.makeClass(proxyClassName); //创建代理类对象
+
+            //设置代理类的接口
+            CtClass interf = pool.getCtClass(clazz.getName()); //获取代理对象的接口类
+            CtClass[] interfaces = new CtClass[]{interf};
+            ctClass.setInterfaces(interfaces);
+            CtMethod[] methods = interf.getDeclaredMethods();
+            for(CtMethod method:methods){
+                String methodName = method.getName();
+                CtMethod cm = new CtMethod(method.getReturnType(), methodName, method.getParameterTypes(), ctClass);
+                cm.setBody("System.out.println(\"hand up my homework from proxy Object\");");
+                ctClass.addMethod(cm);
+            }
+            Class aClass = ctClass.toClass();
+            proxyObject = (T) aClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return proxyObject;
+    }
+
+
 
     /**
      * 创建新代理

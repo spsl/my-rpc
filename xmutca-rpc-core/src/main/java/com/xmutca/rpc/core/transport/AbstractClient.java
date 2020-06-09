@@ -3,7 +3,7 @@ package com.xmutca.rpc.core.transport;
 import com.xmutca.rpc.core.common.ExtensionGroup;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.exception.RpcException;
-import com.xmutca.rpc.core.rpc.invoke.Invoker;
+import com.xmutca.rpc.core.rpc.invoke.RpcInvoker;
 import com.xmutca.rpc.core.rpc.RpcRequest;
 import com.xmutca.rpc.core.rpc.invoke.RpcRequestInvoke;
 import com.xmutca.rpc.core.rpc.RpcResponse;
@@ -25,7 +25,7 @@ public abstract class AbstractClient implements Client {
     private Lock connectLock = new ReentrantLock();
     private RpcRequestInvoke rpcRequestInvoke;
     private RpcClientConfig rpcClientConfig;
-    private Invoker<RpcRequest, RpcResponse> invoker;
+    private RpcInvoker<RpcRequest, RpcResponse> rpcInvoker;
     private volatile boolean closed;
     private InetSocketAddress remoteAddress;
 
@@ -33,7 +33,7 @@ public abstract class AbstractClient implements Client {
     public void init(RpcClientConfig rpcClientConfig, InetSocketAddress remoteAddress) {
         this.rpcClientConfig = rpcClientConfig;
         this.rpcRequestInvoke = new RpcRequestInvoke(rpcClientConfig, this);
-        this.invoker = FilterWrapper.buildInvokeChain(rpcRequestInvoke, ExtensionGroup.CONSUMER);
+        this.rpcInvoker = FilterWrapper.buildInvokeChain(rpcRequestInvoke, ExtensionGroup.CONSUMER);
         this.remoteAddress = remoteAddress;
 
         try {
@@ -102,7 +102,7 @@ public abstract class AbstractClient implements Client {
             connect();
         }
 
-        RpcResponse resp = invoker.invoke(rpcRequest);
+        RpcResponse resp = rpcInvoker.invoke(rpcRequest);
         if (resp.hasException()) {
             throw resp.getException();
         }

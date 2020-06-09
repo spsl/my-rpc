@@ -1,5 +1,4 @@
 rpc:
-  registry: nacos://localhost:8848
   provider:
     corePoolSize: 60
     maxPoolSize: 300

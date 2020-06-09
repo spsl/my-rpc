@@ -41,7 +41,7 @@ public class NettyServer extends AbstractServer {
                         pipeline.addLast("decoder", new NettyDecoder(RpcRequest.class));
                         pipeline.addLast("encoder", new NettyEncoder());
                         pipeline.addLast("idleCheck", new IdleStateHandler(Constants.DEFAULT_READER_IDLE_TIME_SECONDS, 0, 0, TimeUnit.SECONDS));
-                        pipeline.addLast("handler", new NettyServerHandler(getInvoker(), getThreadPoolExecutor()));
+                        pipeline.addLast("handler", new NettyServerHandler(getRpcInvoker(), getInvokerTaskHandler()));
                     }
                 });
     }

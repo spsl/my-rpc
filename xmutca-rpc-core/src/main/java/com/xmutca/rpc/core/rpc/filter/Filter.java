@@ -2,7 +2,7 @@ package com.xmutca.rpc.core.rpc.filter;
 
 import com.xmutca.rpc.core.rpc.RpcRequest;
 import com.xmutca.rpc.core.rpc.RpcResponse;
-import com.xmutca.rpc.core.rpc.invoke.Invoker;
+import com.xmutca.rpc.core.rpc.invoke.RpcInvoker;
 
 /**
  * @version Revision: 0.0.1
@@ -13,9 +13,9 @@ public interface Filter {
 
     /**
      * 远程执行
-     * @param invoker
+     * @param rpcInvoker
      * @param req
      * @return
      */
-    RpcResponse invoke(Invoker<RpcRequest, RpcResponse> invoker, RpcRequest req);
+    RpcResponse invoke(RpcInvoker<RpcRequest, RpcResponse> rpcInvoker, RpcRequest req);
 }

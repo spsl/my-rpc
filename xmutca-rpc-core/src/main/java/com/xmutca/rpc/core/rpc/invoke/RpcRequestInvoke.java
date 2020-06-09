@@ -14,7 +14,7 @@ import com.xmutca.rpc.core.transport.Transporter;
  * @author: weihuang.peng
  * @Date: 2019-11-01
  */
-public class RpcRequestInvoke implements Invoker<RpcRequest, RpcResponse> {
+public class RpcRequestInvoke implements RpcInvoker<RpcRequest, RpcResponse> {
 
     private Client client;
 

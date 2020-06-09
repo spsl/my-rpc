@@ -7,6 +7,10 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
 	<modules>
 		<module>xmutca-rpc-example-api</module>
 		<module>xmutca-rpc-example-consumer</module>

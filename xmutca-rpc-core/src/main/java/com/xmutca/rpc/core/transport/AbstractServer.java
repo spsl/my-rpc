@@ -5,13 +5,9 @@ import com.xmutca.rpc.core.config.RpcServerConfig;
 import com.xmutca.rpc.core.rpc.RpcRequest;
 import com.xmutca.rpc.core.rpc.RpcResponse;
 import com.xmutca.rpc.core.rpc.filter.FilterWrapper;
-import com.xmutca.rpc.core.rpc.invoke.Invoker;
+import com.xmutca.rpc.core.rpc.invoke.RpcInvoker;
+import com.xmutca.rpc.core.rpc.invoke.InvokerTaskHandler;
 import com.xmutca.rpc.core.rpc.invoke.RpcResponseInvoke;
-import io.netty.util.concurrent.DefaultThreadFactory;
-
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version Revision: 0.0.1
@@ -21,8 +17,9 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractServer implements Server {
 
     private RpcServerConfig rpcServerConfig;
-    private ThreadPoolExecutor threadPoolExecutor;
-    private Invoker<RpcRequest, RpcResponse> invoker = FilterWrapper.buildInvokeChain(new RpcResponseInvoke(), ExtensionGroup.PROVIDER);
+
+    private InvokerTaskHandler invokerTaskHandler;
+    private RpcInvoker<RpcRequest, RpcResponse> rpcInvoker = FilterWrapper.buildInvokeChain(new RpcResponseInvoke(), ExtensionGroup.PROVIDER);
 
     @Override
     public void init(RpcServerConfig rpcServerConfig) {
@@ -31,14 +28,8 @@ public abstract class AbstractServer implements Server {
         // 初始化
         doOpen();
 
-        // 初始化线程池
-        threadPoolExecutor = new ThreadPoolExecutor(
-                rpcServerConfig.getCorePoolSize(),
-                rpcServerConfig.getMaxPoolSize(),
-                60L,
-                TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(1000),
-                new DefaultThreadFactory("ServerExecute", true));
+        invokerTaskHandler = new InvokerTaskHandler(rpcServerConfig);
+        invokerTaskHandler.start();
     }
 
     @Override
@@ -60,17 +51,14 @@ public abstract class AbstractServer implements Server {
      * 获取执行器
      * @return
      */
-    public Invoker<RpcRequest, RpcResponse> getInvoker() {
-        return invoker;
+    public RpcInvoker<RpcRequest, RpcResponse> getRpcInvoker() {
+        return rpcInvoker;
     }
 
-    /**
-     * 获取线程池
-     * @return
-     */
-    public ThreadPoolExecutor getThreadPoolExecutor() {
-        return threadPoolExecutor;
+    protected InvokerTaskHandler getInvokerTaskHandler() {
+        return invokerTaskHandler;
     }
+
 
     /**
      * 获取端口

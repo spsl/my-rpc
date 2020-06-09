@@ -9,6 +9,10 @@
 		<relativePath/>
 	</parent>
 
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
 	<artifactId>xmutca-rpc-local</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>

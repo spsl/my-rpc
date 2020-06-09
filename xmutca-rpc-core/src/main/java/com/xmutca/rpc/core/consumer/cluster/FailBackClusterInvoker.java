@@ -4,7 +4,6 @@ import com.xmutca.rpc.core.common.NamedThreadFactory;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.rpc.RpcRequest;
 import com.xmutca.rpc.core.rpc.RpcResponse;
-import com.xmutca.rpc.core.rpc.invoke.Invoker;
 import com.xmutca.rpc.core.transport.Client;
 import com.xmutca.rpc.core.transport.ClientGroup;
 import lombok.extern.slf4j.Slf4j;

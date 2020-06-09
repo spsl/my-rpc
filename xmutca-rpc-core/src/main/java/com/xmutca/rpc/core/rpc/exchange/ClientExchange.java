@@ -1,6 +1,5 @@
 package com.xmutca.rpc.core.rpc.exchange;
 
-import com.google.common.collect.Lists;
 import com.xmutca.rpc.core.common.ExtensionLoader;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.config.RpcMetadata;
