@@ -29,6 +29,9 @@ public interface GenericInvoker {
      */
     Object invoke(String method, Class<?>[] parameterTypes, Object[] args);
 
+
+    Object invoke(String serviceName, String methodName, String methodSign, Object[] args);
+
     /**
      * 泛化调用
      * @param rpcRequest

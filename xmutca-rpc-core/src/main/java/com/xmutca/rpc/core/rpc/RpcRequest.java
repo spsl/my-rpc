@@ -100,7 +100,7 @@ public class RpcRequest implements Serializable {
     public static final class RpcRequestBuilder {
         private String className;
         private String methodName;
-        private Class<?>[] parameterTypes;
+        private String methodSign;
         private Object[] arguments;
         private Map<String, String> attachments;
         private TransportType transportType;
@@ -122,8 +122,8 @@ public class RpcRequest implements Serializable {
             return this;
         }
 
-        public RpcRequestBuilder parameterTypes(Class<?>[] parameterTypes) {
-            this.parameterTypes = parameterTypes;
+        public RpcRequestBuilder methodSign(String methodSign) {
+            this.methodSign = methodSign;
             return this;
         }
 
@@ -146,7 +146,7 @@ public class RpcRequest implements Serializable {
             RpcRequest rpcRequest = new RpcRequest();
             rpcRequest.setClassName(className);
             rpcRequest.setMethodName(methodName);
-            rpcRequest.setMethodSign(InvokerUtils.calculateMethodSign(className, methodName, parameterTypes));
+            rpcRequest.setMethodSign(methodSign);
             rpcRequest.setArguments(arguments);
             rpcRequest.setAttachments(attachments);
             rpcRequest.setTransportType(transportType);

@@ -1,5 +1,6 @@
 package com.xmutca.rpc.core.consumer.cluster;
 
+import com.xmutca.rpc.core.common.InvokerUtils;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.config.RpcMetadata;
 import com.xmutca.rpc.core.consumer.ClusterInvoker;
@@ -77,13 +78,26 @@ public abstract class AbstractClusterInvoker implements ClusterInvoker {
     }
 
     @Override
+    public Object invoke(String serviceName, String methodName, String methodSign, Object[] args) {
+        RpcRequest rpcRequest = RpcRequest
+                .RpcRequestBuilder
+                .rpcRequest()
+                .className(serviceName)
+                .methodName(methodName)
+                .methodSign(methodSign)
+                .arguments(defaultArguments(args))
+                .build();
+        return invoke(rpcRequest);
+    }
+
+    @Override
     public Object invoke(String method, Class<?>[] parameterTypes, Object[] args) {
         RpcRequest rpcRequest = RpcRequest
                 .RpcRequestBuilder
                 .rpcRequest()
                 .className(className)
                 .methodName(method)
-                .parameterTypes(parameterTypes)
+                .methodSign(InvokerUtils.calculateMethodSign(className, method, parameterTypes))
                 .arguments(defaultArguments(args))
                 .build();
         return invoke(rpcRequest);

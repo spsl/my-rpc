@@ -1,6 +1,8 @@
 package com.xmutca.rpc.core.consumer;
 
 import com.xmutca.rpc.core.common.ExtensionLoader;
+import com.xmutca.rpc.core.common.InvokerUtils;
+import com.xmutca.rpc.core.common.SingleClassLoader;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.config.RpcMetadata;
 import com.xmutca.rpc.core.rpc.invoke.ServiceInvoker;
@@ -62,12 +64,22 @@ public class GenericProxyFactory {
      * @param <T>
      * @return
      */
+//    public <T> T getReferenceBean() {
+//        GenericInvoker invoker = this.newProxyInstance();
+//        return (T) Proxy.newProxyInstance(
+//                Thread.currentThread().getContextClassLoader(),
+//                new Class[]{target},
+//                (Object proxy, Method method, Object[] args) -> invoker.invoke(method.getName(), method.getParameterTypes(), args));
+//    }
+
     public <T> T getReferenceBean() {
         GenericInvoker invoker = this.newProxyInstance();
-        return (T) Proxy.newProxyInstance(
-                Thread.currentThread().getContextClassLoader(),
-                new Class[]{target},
-                (Object proxy, Method method, Object[] args) -> invoker.invoke(method.getName(), method.getParameterTypes(), args));
+        try {
+            return (T) generateInterfaceImplements(target, invoker);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -76,40 +88,96 @@ public class GenericProxyFactory {
      * @param <T>
      * @return
      */
-    public <T> T generateReferenceBean() {
-
-
+    public <T> T generateReferenceBean(int a, int b, Integer c) {
 
         return null;
     }
 
-    private static <T> T generateInterfaceImplements(Class<T> clazz) throws NotFoundException {
+    private static <T> T generateInterfaceImplements(Class<T> clazz, GenericInvoker invoker) throws NotFoundException {
         // 创建类
         final String proxyClassName = "rpc.turbo.invoke.generate.Proxy_"
                 + clazz.getName()
                 + "_"
                 + UUID.randomUUID().toString().replace("-", "");
 
-
-
         T proxyObject = null;
         try {
             ClassPool pool = ClassPool.getDefault();
-            CtClass ctClass = pool.makeClass(proxyClassName); //创建代理类对象
+            CtClass proxyClass = pool.makeClass(proxyClassName); //创建代理类对象
 
-            //设置代理类的接口
-            CtClass interf = pool.getCtClass(clazz.getName()); //获取代理对象的接口类
-            CtClass[] interfaces = new CtClass[]{interf};
-            ctClass.setInterfaces(interfaces);
-            CtMethod[] methods = interf.getDeclaredMethods();
-            for(CtMethod method:methods){
+            // 添加私有成员service
+            CtField invokerField = new CtField(pool.get(GenericInvoker.class.getName()), "invoker", proxyClass);
+            invokerField.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
+            proxyClass.addField(invokerField);
+
+            // 添加有参的构造函数
+            CtConstructor constructor = new CtConstructor(new CtClass[] { pool.get(GenericInvoker.class.getName()) },
+                    proxyClass);
+            constructor.setBody("{$0.invoker = $1;}");
+            proxyClass.addConstructor(constructor);
+
+            proxyClass.setInterfaces(new CtClass[]{pool.getCtClass(clazz.getName())});
+            Method[] methods = clazz.getDeclaredMethods();
+            for(Method method:methods){
                 String methodName = method.getName();
-                CtMethod cm = new CtMethod(method.getReturnType(), methodName, method.getParameterTypes(), ctClass);
-                cm.setBody("System.out.println(\"hand up my homework from proxy Object\");");
-                ctClass.addMethod(cm);
+
+                StringBuilder methodBuilder = new StringBuilder();
+
+                methodBuilder.append("public ");
+                methodBuilder.append(method.getReturnType().getName());
+                methodBuilder.append(" ");
+                methodBuilder.append(method.getName());
+                methodBuilder.append("(");
+                for (int i = 0; i < method.getParameterTypes().length; i++) {
+                    Class<?> parameterType = method.getParameterTypes()[i];
+
+                    methodBuilder.append(parameterType.getName());
+                    methodBuilder.append(" param");
+                    methodBuilder.append(i);
+                    if (i != method.getParameterTypes().length - 1) {
+                        methodBuilder.append(", ");
+                    }
+                }
+
+                methodBuilder.append("){\r\n");
+                methodBuilder.append("Object[] params = new Object[]{");
+                for (int i = 0; i < method.getParameterTypes().length; i++) {
+                    methodBuilder.append("param");
+                    methodBuilder.append(i);
+                    if (i != method.getParameterTypes().length - 1) {
+                        methodBuilder.append(", ");
+                    }
+                }
+                methodBuilder.append("};\r\n");
+
+                methodBuilder.append("String serviceName = \"");
+                methodBuilder.append(clazz.getName());
+                methodBuilder.append("\";\r\n");
+
+
+                methodBuilder.append("String methodName = \"");
+                methodBuilder.append(method.getName());
+                methodBuilder.append("\";\r\n");
+
+
+
+                methodBuilder.append("String methodSign = \"");
+                methodBuilder.append(InvokerUtils.calculateMethodSign(clazz.getName(), methodName, method.getParameterTypes()));
+                methodBuilder.append("\";\r\n");
+
+
+                methodBuilder.append(" return (");
+                methodBuilder.append(method.getReturnType().getName());
+                methodBuilder.append(") invoker.invoke(serviceName, methodName, methodSign, params); \r\n }");
+
+
+                CtMethod m = CtNewMethod.make(methodBuilder.toString(), proxyClass);
+                proxyClass.addMethod(m);
             }
-            Class aClass = ctClass.toClass();
-            proxyObject = (T) aClass.newInstance();
+
+            Class<?> invokerClass = proxyClass.toClass();
+
+            return(T) invokerClass.getConstructor(GenericInvoker.class).newInstance(invoker);
         } catch (Exception e) {
             e.printStackTrace();
         }
