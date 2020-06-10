@@ -4,10 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.config.RpcMetadata;
 import com.xmutca.rpc.core.consumer.GenericInvoker;
-import com.xmutca.rpc.core.consumer.GenericProxyFactory;
+import com.xmutca.rpc.core.consumer.RemoteServiceFactory;
 import com.xmutca.rpc.core.rpc.exchange.ClientExchange;
 import com.xmutca.rpc.core.transport.ClientPool;
-import com.xmutca.rpc.core.transport.netty.client.NettyClient;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -51,13 +50,13 @@ public class ClientTest {
 //                ex.printStackTrace();
 //            }
 //        }
-        System.out.println(ClientPool.getMetaDataGroupMap());
-        GenericInvoker invoker = GenericProxyFactory
-                .factory(ClientTest.class)
-                .metadata(rpcMetadata)
-                .newProxyInstance();
-        Object result = invoker.invoke("xxx", new Class[]{}, null);
-        System.out.println(JSON.toJSONString(result));
-        System.in.read();
+//        System.out.println(ClientPool.getMetaDataGroupMap());
+//        GenericInvoker invoker = RemoteServiceFactory
+//                .factory(ClientTest.class)
+//                .metadata(rpcMetadata)
+//                .newProxyInstance();
+//        Object result = invoker.invoke("xxx", new Class[]{}, null);
+//        System.out.println(JSON.toJSONString(result));
+//        System.in.read();
     }
 }

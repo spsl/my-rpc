@@ -1,6 +1,5 @@
 package com.xmutca.rpc.core.consumer.cluster;
 
-import com.xmutca.rpc.core.common.InvokerUtils;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.config.RpcMetadata;
 import com.xmutca.rpc.core.consumer.ClusterInvoker;
@@ -11,8 +10,6 @@ import com.xmutca.rpc.core.rpc.RpcResponse;
 import com.xmutca.rpc.core.transport.Client;
 import com.xmutca.rpc.core.transport.ClientGroup;
 import com.xmutca.rpc.core.transport.ClientPool;
-
-import java.util.List;
 
 /**
  * @version Revision: 0.0.1
@@ -37,35 +34,16 @@ public abstract class AbstractClusterInvoker implements ClusterInvoker {
     private RpcClientConfig rpcClientConfig;
 
     /**
-     * 执行的facade名
-     */
-    private String className;
-
-    /**
      * 初始化相关对象
      * @param rpcMetadata
      * @param loadBalancer
      * @param rpcClientConfig
-     * @param className
      */
     @Override
-    public void init(RpcMetadata rpcMetadata, LoadBalancer loadBalancer, RpcClientConfig rpcClientConfig, String className) {
+    public void init(RpcMetadata rpcMetadata, LoadBalancer loadBalancer, RpcClientConfig rpcClientConfig) {
         this.rpcMetadata = rpcMetadata;
         this.loadBalancer = loadBalancer;
         this.rpcClientConfig = rpcClientConfig;
-        this.className = className;
-    }
-
-    /**
-     * 执行发送
-     * @param method
-     * @param parameterTypes
-     * @param args
-     * @return
-     */
-    @Override
-    public Object invoke(String method, String[] parameterTypes, Object[] args) {
-        return invoke(method, convertParameterType(parameterTypes), args);
     }
 
     @Override
@@ -90,19 +68,6 @@ public abstract class AbstractClusterInvoker implements ClusterInvoker {
         return invoke(rpcRequest);
     }
 
-    @Override
-    public Object invoke(String method, Class<?>[] parameterTypes, Object[] args) {
-        RpcRequest rpcRequest = RpcRequest
-                .RpcRequestBuilder
-                .rpcRequest()
-                .className(className)
-                .methodName(method)
-                .methodSign(InvokerUtils.calculateMethodSign(className, method, parameterTypes))
-                .arguments(defaultArguments(args))
-                .build();
-        return invoke(rpcRequest);
-    }
-
     /**
      * 处理空参数问题
      * @param args
@@ -113,28 +78,6 @@ public abstract class AbstractClusterInvoker implements ClusterInvoker {
             return new Object[]{};
         }
         return args;
-    }
-
-    /**
-     * 转换参数类型
-     * @param parameterTypes
-     * @return
-     */
-    private Class<?>[] convertParameterType(String[] parameterTypes) {
-        if (null == parameterTypes || parameterTypes.length == 0) {
-            return new Class<?>[]{};
-        }
-
-        Class<?>[] types = new Class<?>[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            try {
-                types[i] = Class.forName(parameterTypes[i]);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("ClassNotFoundException:" + parameterTypes[i], e);
-            }
-        }
-
-        return types;
     }
 
     /**

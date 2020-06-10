@@ -16,5 +16,5 @@ public interface ClusterInvoker extends GenericInvoker {
      * @param rpcClientConfig
      * @param className
      */
-    void init(RpcMetadata rpcMetadata, LoadBalancer loadBalancer, RpcClientConfig rpcClientConfig, String className);
+    void init(RpcMetadata rpcMetadata, LoadBalancer loadBalancer, RpcClientConfig rpcClientConfig);
 }

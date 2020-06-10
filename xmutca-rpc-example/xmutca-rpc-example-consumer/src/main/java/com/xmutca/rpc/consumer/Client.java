@@ -4,12 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.xmutca.rpc.core.config.RpcClientConfig;
 import com.xmutca.rpc.core.config.RpcMetadata;
 import com.xmutca.rpc.core.consumer.GenericInvoker;
-import com.xmutca.rpc.core.consumer.GenericProxyFactory;
+import com.xmutca.rpc.core.consumer.RemoteServiceFactory;
 import com.xmutca.rpc.core.rpc.exchange.ClientExchange;
 import com.xmutca.rpc.example.api.HelloService;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Arrays;
 
 /**
@@ -35,12 +34,12 @@ public class Client {
 
         ClientExchange.start(Arrays.asList(rpcConfig), "");
 
-        GenericInvoker invoker = GenericProxyFactory
-                .factory(HelloService.class)
-                .metadata(rpcMetadata)
-                .newProxyInstance();
-        Object result = invoker.invoke("sayHello", new Class[]{String.class}, new Object[]{"sb"});
-        System.out.println(JSON.toJSONString(result));
-        System.in.read();
+//        GenericInvoker invoker = RemoteServiceFactory
+//                .factory(HelloService.class)
+//                .metadata(rpcMetadata)
+//                .newProxyInstance();
+//        Object result = invoker.invoke("sayHello", new Class[]{String.class}, new Object[]{"sb"});
+//        System.out.println(JSON.toJSONString(result));
+//        System.in.read();
     }
 }

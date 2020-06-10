@@ -1,7 +1,9 @@
 package com.xmutca.rpc.spring.consumer;
 
 import com.xmutca.rpc.core.config.RpcMetadata;
-import com.xmutca.rpc.core.consumer.GenericProxyFactory;
+import com.xmutca.rpc.core.consumer.DefaultRemoteInvokerHandler;
+import com.xmutca.rpc.core.consumer.RemoteInvokerHandler;
+import com.xmutca.rpc.core.consumer.RemoteServiceFactory;
 import com.xmutca.rpc.core.consumer.Reference;
 import com.xmutca.rpc.core.rpc.exchange.ClientExchange;
 import com.xmutca.rpc.spring.common.XmutcaRpcProperties;
@@ -19,11 +21,16 @@ import java.util.Objects;
 @Slf4j
 public class ReferencePostProcessor implements BeanPostProcessor {
 
+
+    private RemoteInvokerHandler remoteInvokerHandler;
+
     public ReferencePostProcessor(XmutcaRpcProperties xmutcaRpcProperties) {
         // 不存在配置
         if (Objects.isNull(xmutcaRpcProperties.getConsumer())) {
             return;
         }
+
+        remoteInvokerHandler = new DefaultRemoteInvokerHandler(xmutcaRpcProperties.getConsumer());
 
         // 启动客户端
         ClientExchange.start(xmutcaRpcProperties.getConsumer(), xmutcaRpcProperties.getRegistry());
@@ -49,10 +56,9 @@ public class ReferencePostProcessor implements BeanPostProcessor {
                     rpcMetadata.setVersion(reference.version());
 
                     // 生成引用
-                    Object instance = GenericProxyFactory
-                            .factory(field.getType())
-                            .metadata(rpcMetadata)
-                            .getReferenceBean();
+                    Object instance = RemoteServiceFactory
+                            .factory(rpcMetadata, remoteInvokerHandler)
+                            .getService(field.getType());
                     try {
                         field.setAccessible(true);
                         field.set(bean, instance);
