@@ -11,8 +11,14 @@ import com.xmutca.rpc.example.api.HelloService;
 @Provider(interfaceClass = HelloService.class)
 public class HelloServiceImpl implements HelloService {
 
+
     @Override
-    public String sayHello(String msg) {
-        return "Hello -> " + msg;
+    public String echo(String msg) {
+        return msg;
+    }
+
+    @Override
+    public String sayHello() {
+        return "hello";
     }
 }

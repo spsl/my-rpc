@@ -14,7 +14,12 @@ import org.springframework.stereotype.Component;
 public class HelloServiceImpl implements HelloService {
 
     @Override
-    public String sayHello(String msg) {
+    public String echo(String msg) {
         return msg;
+    }
+
+    @Override
+    public String sayHello() {
+        return "hello";
     }
 }

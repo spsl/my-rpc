@@ -17,8 +17,25 @@ public class ControllerTest {
     @Reference(serviceName = "test", group = "order", interfaceClass = HelloService.class)
     private HelloService helloService;
 
-    @RequestMapping("/test")
+    @RequestMapping("/hello")
     public Object test() {
-        return helloService.sayHello("xxx");
+        return helloService.sayHello();
+    }
+
+    @RequestMapping("/echo")
+    public Object echo(String text) {
+        return helloService.echo(text);
+    }
+
+    public static void main(String[] args) {
+        ttt();
+    }
+
+    public static java.lang.Object ttt(){
+        Object[] params = new Object[0];
+        String serviceName = "com.xmutca.rpc.consumer.ControllerTest";
+        String methodName = "test";
+        String methodSign = "394847028a515dbe7ce8ef5c719ed327";
+        return null;
     }
 }

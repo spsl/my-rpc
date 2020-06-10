@@ -85,30 +85,35 @@ public class RemoteServiceFactory {
                 }
 
                 methodBuilder.append("){\r\n");
-                methodBuilder.append("Object[] params = new Object[]{");
-                for (int i = 0; i < method.getParameterTypes().length; i++) {
-                    methodBuilder.append("param");
-                    methodBuilder.append(i);
-                    if (i != method.getParameterTypes().length - 1) {
-                        methodBuilder.append(", ");
+                if (method.getParameterTypes().length == 0) {
+                    methodBuilder.append("Object[] params = new Object[0];");
+                } else {
+                    methodBuilder.append("Object[] params = new Object[]{");
+                    for (int i = 0; i < method.getParameterTypes().length; i++) {
+                        methodBuilder.append("param");
+                        methodBuilder.append(i);
+                        if (i != method.getParameterTypes().length - 1) {
+                            methodBuilder.append(", ");
+                        }
                     }
+                    methodBuilder.append("};\r\n ");
                 }
-                methodBuilder.append("};\r\n");
 
-                methodBuilder.append("String serviceName = \"");
+
+                methodBuilder.append(" java.lang.String serviceName = \"");
                 methodBuilder.append(clazz.getName());
-                methodBuilder.append("\";\r\n");
+                methodBuilder.append("\";\r\n ");
 
 
-                methodBuilder.append("String methodName = \"");
+                methodBuilder.append(" String methodName = \"");
                 methodBuilder.append(method.getName());
-                methodBuilder.append("\";\r\n");
+                methodBuilder.append("\";\r\n ");
 
 
 
-                methodBuilder.append("String methodSign = \"");
+                methodBuilder.append(" String methodSign = \"");
                 methodBuilder.append(InvokerUtils.calculateMethodSign(clazz.getName(), methodName, method.getParameterTypes()));
-                methodBuilder.append("\";\r\n");
+                methodBuilder.append("\";\r\n ");
 
 
                 methodBuilder.append(" return (");

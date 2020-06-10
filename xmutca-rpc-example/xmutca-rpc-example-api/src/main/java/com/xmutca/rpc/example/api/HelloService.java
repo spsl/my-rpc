@@ -13,5 +13,7 @@ public interface HelloService {
      * @param msg
      * @return
      */
-    String sayHello(String msg);
+    String echo(String msg);
+
+    String sayHello();
 }

@@ -1,6 +1,6 @@
 rpc:
   consumer:
-    - timeout: 1000
+    - timeout: 100000
       codecType: protoStuff
       remoteAddress: localhost:8886
       metadata:
