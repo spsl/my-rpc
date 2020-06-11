@@ -106,17 +106,8 @@ public class JavassistInvoker<T> implements ServiceInvoker<T> {
         return invoker;
     }
 
-
-    @Override
-    public T invoke() {
-        return realInvoker.invoke();
-    }
-
     @Override
     public T invoke(Object... params) {
-        if (parameterCount < 1) {
-            return invoke();
-        }
         return realInvoker.invoke(params);
     }
 
